@@ -59,7 +59,7 @@ def scan_photo():
         brand, model = favourite.split()[0], favourite.split()[-1]
         image_url = get_poster(brand, model)
 
-        return {'title': favourite, 'poster': image_url}
+        return {'title': favourite, 'brand': brand, 'model': model, 'poster': image_url}
     return {'error': 'Invalid type of photo'}, status.HTTP_400_BAD_REQUEST
     return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
 
