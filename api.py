@@ -18,6 +18,23 @@ headers = {'X-IBM-Client-Id': token, 'content-type': "application/json", 'accept
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
+def get_poster(title, auto_model):
+    response = requests.get('https://gw.hackathon.vtb.ru/vtb/hackathon/marketplace', headers = headers).json()
+    offers = response['list']
+    # Запрос к VTB-API
+
+    cars_vtb = []
+    print(offers)
+
+    for brand in offers:
+        if brand['title'] == title:
+            cars_vtb += [model['bodies'][0]['photo'] for model in brand['models'] if (model['model']['title'] == auto_model and len(model['bodies'][0]) > 0)]
+    
+    if len(cars_vtb) > 0:
+        return cars_vtb[0]
+    else:
+        return None
+
 @app.route('/api/photo/recognize', methods = ['POST'])
 def scan_photo():
     # Распознавание одного фото
@@ -39,14 +56,17 @@ def scan_photo():
         except Exception:
             return {'error': 'Photo was not recognized'}, status.HTTP_400_BAD_REQUEST
 
-        return favourite
+        brand, model = favourite.split()[0], favourite.split()[-1]
+        image_url = get_poster(brand, model)
+
+        return {'title': favourite, 'poster': image_url}
     return {'error': 'Invalid type of photo'}, status.HTTP_400_BAD_REQUEST
     return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
-
 
 @app.route('/api/auto/get', methods = ['GET'])
 def get_auto():
     # Получение авто по марке
+    
 
     if request.form.get('brand', None) is not None and request.form.get('model', None) is not None and request.form.get('num', None) is not None and request.form.get('offset', None) is not None:
 
@@ -71,13 +91,12 @@ def get_auto():
                 cars_vtb += [model for model in brand['models'] if (model['model']['title'] == car_model and model['minprice'] > start_price)]
 
         print(cars_vtb)
-        return {'vtb': cars_vtb}
+        return {'vtb': cars_vtb, 'autoru': []}
 
 
     return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
 
 
-
-
+#print(get_poster('LADA', 'Granta'))
 app.secret_key = os.urandom(24)
 app.run(host='0.0.0.0', port='80', debug=True)
