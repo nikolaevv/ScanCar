@@ -61,6 +61,13 @@ def zip_image(image):
     im1.save('./photos/image_scaled.jpg', quality = 60)
     return open('./photos/image_scaled.jpg', 'rb')
 
+def get_year(title, auto_model):
+    cars = models.Car.query.filter(models.Car.brand == title).filter(models.Car.model == auto_model).all()
+    if len(cars) > 0:
+        return cars[0].production_date
+    else:
+        return 2020
+
 @app.route('/api/photo/recognize', methods = ['POST'])
 def scan_photo():
     # Распознавание одного фото
@@ -89,7 +96,7 @@ def scan_photo():
         brand, model = favourite.split()[0], favourite.split()[-1]
         image_url = get_poster(brand, model)
 
-        return {'title': favourite, 'brand': brand, 'model': model, 'poster': image_url}
+        return {'title': favourite, 'brand': brand, 'model': model, 'poster': image_url, 'year': get_year(brand, model)}
         # 'year': get_year(brand, model)
     return {'error': 'Invalid type of photo'}, status.HTTP_400_BAD_REQUEST
     return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
