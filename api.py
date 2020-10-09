@@ -4,6 +4,8 @@ from flask import Flask, render_template, send_from_directory, session, redirect
 from flask_sqlalchemy import SQLAlchemy
 from app import models, app, db
 from flask_api import status
+#import StringIO
+from PIL import Image
 from werkzeug.utils import secure_filename
 #import pandas
 import os
@@ -35,13 +37,23 @@ def get_poster(title, auto_model):
     else:
         return None
 
+def zip_image(image):
+    # Алгоритм сжатия фото
+    im1 = Image.open(image)
+    #image = Image.open(image)
+    #image.save(image.path, quality = 20, optimize = True) 
+    im1 = im1.resize((720, 1080), Image.ANTIALIAS)
+    im1.save('./photos/image_scaled.jpg', quality = 60)
+    return open('./photos/image_scaled.jpg', 'rb')
+
 @app.route('/api/photo/recognize', methods = ['POST'])
 def scan_photo():
     # Распознавание одного фото
     photo = request.files['photo']
-
+    
     if photo and allowed_file(photo.filename):
         #with open("my_image.jpg", "rb") as img_file:
+        photo = zip_image(photo)
         my_string = base64.b64encode(photo.read())
         # Преобразование в base-64
         
