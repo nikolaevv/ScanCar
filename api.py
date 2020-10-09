@@ -104,41 +104,43 @@ def scan_photo():
 @app.route('/api/auto/get', methods = ['POST'])
 def get_auto():
     # Получение авто по марке
-    print(request.get_json())
-    if request.get_json().get('brand', None) is not None and request.get_json().get('model', None) is not None and request.get_json().get('num', None) is not None and request.get_json().get('offset', None) is not None:
+    #print(request.get_json())
+    if request.get_json() is not None:
+        if request.get_json().get('brand', None) is not None and request.get_json().get('model', None) is not None and request.get_json().get('num', None) is not None and request.get_json().get('offset', None) is not None:
 
-        title = request.get_json()['brand']
-        car_model = request.get_json()['model']
+            title = request.get_json()['brand']
+            car_model = request.get_json()['model']
 
-        start_price, end_price = 0, 900000000
+            start_price, end_price = 0, 900000000
 
-        if request.get_json().get('start_price', None) is not None:
-            start_price = int(request.get_json()['start_price'])
-        if request.get_json().get('end_price', None) is not None:
-            end_price = int(request.get_json()['end_price'])
+            if request.get_json().get('start_price', None) is not None:
+                start_price = int(request.get_json()['start_price'])
+            if request.get_json().get('end_price', None) is not None:
+                end_price = int(request.get_json()['end_price'])
 
-        response = requests.get('https://gw.hackathon.vtb.ru/vtb/hackathon/marketplace', headers = headers).json()
-        offers = response['list']
-        # Запрос к VTB-API
+            response = requests.get('https://gw.hackathon.vtb.ru/vtb/hackathon/marketplace', headers = headers).json()
+            offers = response['list']
+            # Запрос к VTB-API
 
-        cars_vtb = []
+            cars_vtb = []
 
-        for brand in offers:
-            if brand['title'] == title:
-                cars_vtb += [{'brand': title, 'model': car_model, 'image_url': get_poster(title, car_model), 'price': model['minprice'], 'production_date': 2020, 'type': 'vtb'} 
-                            for model in brand['models'] 
-                            if (model['model']['title'] == car_model and model['minprice'] > start_price and model['minprice'] < end_price)]
+            for brand in offers:
+                if brand['title'] == title:
+                    cars_vtb += [{'brand': title, 'model': car_model, 'image_url': get_poster(title, car_model), 'price': model['minprice'], 'production_date': 2020, 'type': 'vtb'} 
+                                for model in brand['models'] 
+                                if (model['model']['title'] == car_model and model['minprice'] > start_price and model['minprice'] < end_price)]
 
-        print(cars_vtb)
-        offset = int(request.get_json()['offset'])
-        num = int(request.get_json()['num'])
+            print(cars_vtb)
+            offset = int(request.get_json()['offset'])
+            num = int(request.get_json()['num'])
 
-        cars_autoru = queryset_to_list(models.Car.query.filter(models.Car.brand == title).filter(models.Car.model == car_model).all())
-        #[offset:num]
-        cars = cars_vtb + cars_autoru
-        
+            cars_autoru = queryset_to_list(models.Car.query.filter(models.Car.brand == title).filter(models.Car.model == car_model).all())
+            #[offset:num]
+            cars = cars_vtb + cars_autoru
+            
 
-        return {'cars': cars[offset:num]}
+            return {'cars': cars[offset:num]}
+        return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
     return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
 
 @app.route('/api/auto/get', methods = ['GET'])
