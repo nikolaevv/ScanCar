@@ -48,7 +48,9 @@ def get_poster(title, auto_model):
     if len(cars_vtb) > 0:
         return cars_vtb[0]
     else:
-        return None
+        cars = models.Car.query.filter(models.Car.brand == title).filter(models.Car.model == auto_model).all()
+        if len(cars) > 0:
+            return cars[0].image_url
 
 def zip_image(image):
     # Алгоритм сжатия фото
@@ -88,6 +90,7 @@ def scan_photo():
         image_url = get_poster(brand, model)
 
         return {'title': favourite, 'brand': brand, 'model': model, 'poster': image_url}
+        # 'year': get_year(brand, model)
     return {'error': 'Invalid type of photo'}, status.HTTP_400_BAD_REQUEST
     return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
 
