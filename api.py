@@ -104,17 +104,18 @@ def scan_photo():
 @app.route('/api/auto/get', methods = ['POST'])
 def get_auto():
     # Получение авто по марке
-    if request.form.get('brand', None) is not None and request.form.get('model', None) is not None and request.form.get('num', None) is not None and request.form.get('offset', None) is not None:
+    print(request.get_json())
+    if request.get_json().get('brand', None) is not None and request.get_json().get('model', None) is not None and request.get_json().get('num', None) is not None and request.get_json().get('offset', None) is not None:
 
-        title = request.form['brand']
-        car_model = request.form['model']
+        title = request.get_json()['brand']
+        car_model = request.get_json()['model']
 
         start_price, end_price = 0, 900000000
 
-        if request.form.get('start_price', None) is not None:
-            start_price = int(request.form['start_price'])
-        if request.form.get('end_price', None) is not None:
-            end_price = int(request.form['end_price'])
+        if request.get_json().get('start_price', None) is not None:
+            start_price = int(request.get_json()['start_price'])
+        if request.get_json().get('end_price', None) is not None:
+            end_price = int(request.get_json()['end_price'])
 
         response = requests.get('https://gw.hackathon.vtb.ru/vtb/hackathon/marketplace', headers = headers).json()
         offers = response['list']
@@ -129,8 +130,8 @@ def get_auto():
                             if (model['model']['title'] == car_model and model['minprice'] > start_price and model['minprice'] < end_price)]
 
         print(cars_vtb)
-        offset = int(request.form['offset'])
-        num = int(request.form['num'])
+        offset = int(request.get_json()['offset'])
+        num = int(request.get_json()['num'])
 
         cars_autoru = queryset_to_list(models.Car.query.filter(models.Car.brand == title).filter(models.Car.model == car_model).all())
         #[offset:num]
