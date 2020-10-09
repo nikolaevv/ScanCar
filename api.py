@@ -12,10 +12,23 @@ import os
 from config import token
 import base64
 import requests
+import json
 import time
+
+from sqlalchemy.ext.declarative import DeclarativeMeta
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg'}
 headers = {'X-IBM-Client-Id': token, 'content-type': "application/json", 'accept': "application/json"}
+
+def queryset_to_list(queryset):
+    flat_list = []
+    for q in queryset:
+        q_dict = q.__dict__
+        del q_dict['_sa_instance_state']
+        del q_dict['description']
+        q_dict['type'] = 'autoru'
+        flat_list.append(q_dict)
+    return flat_list
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
@@ -81,8 +94,6 @@ def scan_photo():
 @app.route('/api/auto/get', methods = ['GET'])
 def get_auto():
     # Получение авто по марке
-    
-
     if request.form.get('brand', None) is not None and request.form.get('model', None) is not None and request.form.get('num', None) is not None and request.form.get('offset', None) is not None:
 
         title = request.form['brand']
@@ -103,13 +114,25 @@ def get_auto():
 
         for brand in offers:
             if brand['title'] == title:
-                cars_vtb += [model for model in brand['models'] if (model['model']['title'] == car_model and model['minprice'] > start_price)]
+                cars_vtb += [{'brand': title, 'model': car_model, 'image_url': get_poster(title, car_model), 'price': model['minprice'], 'production_date': 2020, 'type': 'vtb'} 
+                            for model in brand['models'] 
+                            if (model['model']['title'] == car_model and model['minprice'] > start_price and model['minprice'] < end_price)]
 
         print(cars_vtb)
-        return {'vtb': cars_vtb, 'autoru': []}
+        offset = int(request.form['offset'])
+        num = int(request.form['num'])
 
+        cars_autoru = queryset_to_list(models.Car.query.filter(models.Car.brand == title).filter(models.Car.model == car_model).all())
+        #[offset:num]
+        cars = cars_vtb + cars_autoru
+        
 
+        return {'cars': cars[offset:num]}
     return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
+
+@app.route('/api/auto/get', methods = ['GET'])
+def calc_auto():
+    pass
 
 
 #print(get_poster('LADA', 'Granta'))

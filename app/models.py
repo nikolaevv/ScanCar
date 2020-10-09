@@ -10,7 +10,7 @@ class Car(db.Model):
     # Цена
     image_url = db.Column(db.String(255))
     # Ссылка на постер
-    description = db.Column(db.String(1024))
+    description = db.Column(db.String(9000))
     # Описание
     production_date = db.Column(db.Integer())
     # Год производства

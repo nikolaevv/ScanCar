@@ -37,8 +37,8 @@ for brand in brands:
         page += 1
 
         payload['page'] = page
-        payload['catalog_filter'] = [{"mark": brand[0],"model": brand[1]}]
-        headers['Referer'] = 'https://auto.ru/moskva/cars/{}/{}/all/?output_type=list&page={}'.format(brand[0], brand[1], page)
+        payload['catalog_filter'] = [{"mark": brand[0].upper(),"model": brand[1].upper()}]
+        headers['Referer'] = 'https://auto.ru/moskva/cars/{}/{}/all/?output_type=list&page={}'.format(brand[0].upper(), brand[1].upper(), page)
 
         try:
             response = requests.post(url, headers = headers, json = payload).json()
@@ -64,8 +64,8 @@ for brand in brands:
                     print(model)
                     print(production_date)
 
-                    car = models.Car(brand = brand, model = model, price = price, production_date = production_date, image_url = image_url, description = description)
-                    db.session.add(car)
+                    new_car = models.Car(brand = brand[0], model = brand[1], price = price, production_date = production_date, image_url = image_url, description = description)
+                    db.session.add(new_car)
                     db.session.commit()
                 else:
                     print('used')
@@ -73,8 +73,13 @@ for brand in brands:
                 
                 
             time.sleep(5)
-        except Exception:
+        except Exception as e:
+            print('PAGE', page)
+            print(e)
             break
+
+    print(page)
+    
 
 
 
