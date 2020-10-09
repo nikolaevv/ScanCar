@@ -28,7 +28,7 @@ headers = {
 
 payload = {"category": "cars", "section": "all", "page": 0,"geo_radius": 200, "geo_id":[213]}
 
-brands = [['HYUNDAI', 'SOLARIS'], ['KIA', 'RIO'], ['volkswagen', 'polo'], ['volkswagen', 'tiguan'], ['skoda', 'octavia']]
+#brands = [['HYUNDAI', 'SOLARIS'], ['KIA', 'RIO'], ['volkswagen', 'polo'], ['volkswagen', 'tiguan'], ['skoda', 'octavia']]
 
 for brand in brands:
     page = 1

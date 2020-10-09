@@ -101,7 +101,7 @@ def scan_photo():
     return {'error': 'Invalid type of photo'}, status.HTTP_400_BAD_REQUEST
     return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
 
-@app.route('/api/auto/get', methods = ['GET'])
+@app.route('/api/auto/get', methods = ['POST'])
 def get_auto():
     # Получение авто по марке
     if request.form.get('brand', None) is not None and request.form.get('model', None) is not None and request.form.get('num', None) is not None and request.form.get('offset', None) is not None:
