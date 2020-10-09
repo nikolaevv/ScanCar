@@ -49,9 +49,12 @@ def scan_photo():
         try:
             response = requests.post('https://gw.hackathon.vtb.ru/vtb/hackathon/car-recognize', headers = headers, json = {'content': str(my_string, 'utf-8')}).json()
             # Запрос к VTB-API
+            print(response)
             
             probabilities = response['probabilities']
+            print(probabilities)
             favourite = max(probabilities, key = probabilities.get)
+            print(favourite)
             # Фаворит нейросети ВТБ
         except Exception:
             return {'error': 'Photo was not recognized'}, status.HTTP_400_BAD_REQUEST
