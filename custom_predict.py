@@ -12,7 +12,7 @@ lite_model_content = converter.convert()
 #with open("/gdrive/My Drive/lite_car_model", "wb") as f:
 #f.write(lite_model_content)
 
-#interpreter = tf.lite.Interpreter(model_content=lite_model_content)
+interpreter = tf.lite.Interpreter(model_content=lite_model_content)
 
 # This little helper wraps the TF Lite interpreter as a numpy-to-numpy function.
 def lite_model(images):
