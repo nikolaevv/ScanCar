@@ -137,15 +137,40 @@ def get_auto():
             cars_autoru = queryset_to_list(models.Car.query.filter(models.Car.brand == title).filter(models.Car.model == car_model).all())
             #[offset:num]
             cars = cars_vtb + cars_autoru
-            
 
             return {'cars': cars[offset:num]}
         return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
     return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
 
-@app.route('/api/auto/get', methods = ['GET'])
+@app.route('/api/credit/calc', methods = ['POST'])
 def calc_auto():
-    pass
+    print(request.get_json())
+    if request.get_json() is not None:
+        if request.get_json().get('cost', None) is not None and request.get_json().get('initialFee', None) is not None and request.get_json().get('kaskoValue', None) is not None and request.get_json().get('term', None) is not None:
+
+            cost = int(request.get_json()['cost'])
+            initialFee = int(request.get_json()['initialFee'])
+            kaskoValue = int(request.get_json()['kaskoValue'])
+            term = int(request.get_json()['term'])
+
+            data = {'clientTypes': ['ac43d7e4-cd8c-4f6f-b18a-5ccbc1356f75'], 
+                    'cost': float(cost), 
+                    'initialFee': float(initialFee), 
+                    'kaskoValue': kaskoValue, 
+                    'term': term, 
+                    'residualPayment': float(cost - initialFee), 
+                    'language': 'ru-RU',
+                    'settingsName': 'Haval',
+                    'specialConditions': ["57ba0183-5988-4137-86a6-3d30a4ed8dc9","b907b476-5a26-4b25-b9c0-8091e9d5c65f","cbfc4ef3-af70-4182-8cf6-e73f361d1e68"]
+            }
+
+            response = requests.post('https://gw.hackathon.vtb.ru/vtb/hackathon/calculate', headers = headers, json = data).json()
+            program = response['result']
+            return program
+        return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
+    return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
+
+
 
 
 #print(get_poster('LADA', 'Granta'))
