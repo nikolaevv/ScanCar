@@ -72,7 +72,7 @@ def get_poster(title, auto_model):
     else:
         cars = models.Car.query.filter(models.Car.brand == title).filter(models.Car.model == auto_model).all()
         if len(cars) > 0:
-            return cars[0].image_url
+            return cars[0].image_url_1
 
 def zip_image(image):
     # Алгоритм сжатия фото
