@@ -82,6 +82,11 @@ def get_price(model):
     else:
         return '-'
 
+@app.route('/api/specials/get', methods = ['GET'])
+def get_settings():
+    response = requests.get('https://gw.hackathon.vtb.ru/vtb/hackathon/settings?name=Haval&language=ru-RU', headers = headers).json()
+    return {'specialConditions': response['specialConditions']}
+
 @app.route('/api/photo/recognize', methods = ['POST'])
 def scan_photo():
     # Распознавание одного фото
@@ -168,6 +173,7 @@ def calc_auto():
             initialFee = int(request.get_json()['initialFee'])
             kaskoValue = int(request.get_json()['kaskoValue'])
             term = int(request.get_json()['term'])
+            specialConditions = int(request.get_json()['specialConditions'])
 
             data = {'clientTypes': ['ac43d7e4-cd8c-4f6f-b18a-5ccbc1356f75'], 
                     'cost': float(cost), 
