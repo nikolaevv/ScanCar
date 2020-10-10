@@ -69,6 +69,19 @@ def get_year(title, auto_model):
     else:
         return 2020
 
+def priced(model, start_price, end_price):
+    # Соответствие цене
+    if model.get('minprice', None) is not None:
+        return model['minprice'] > start_price and model['minprice'] < end_price
+    else:
+        return True
+
+def get_price(model):
+    if model.get('minprice', None) is not None:
+        return model['minprice']
+    else:
+        return '-'
+
 @app.route('/api/photo/recognize', methods = ['POST'])
 def scan_photo():
     # Распознавание одного фото
@@ -120,16 +133,18 @@ def get_auto():
                 end_price = int(request.get_json()['end_price'])
 
             response = requests.get('https://gw.hackathon.vtb.ru/vtb/hackathon/marketplace', headers = headers).json()
+            print(response)
             offers = response['list']
             # Запрос к VTB-API
+            print(offers)
 
             cars_vtb = []
 
             for brand in offers:
                 if brand['title'] == title:
-                    cars_vtb += [{'brand': title, 'model': car_model, 'image_url': get_poster(title, car_model), 'price': model['minprice'], 'production_date': 2020, 'type': 'vtb'} 
+                    cars_vtb += [{'brand': title, 'model': car_model, 'image_urls': [get_poster(title, car_model)], 'price': get_price(model), 'bodywork': model['bodies'][0]['typeTitle'], 'color': '-', 'engine': '-', 'tax': '-', 'kpp': '-', 'AWD': '-', 'steering_wheel': '-', 'customs': '-', 'production_date': 2020, 'type': 'vtb'} 
                                 for model in brand['models'] 
-                                if (model['model']['title'] == car_model and model['minprice'] > start_price and model['minprice'] < end_price)]
+                                if (model['model']['title'] == car_model and priced(model, start_price, end_price) is True)]
 
             print(cars_vtb)
             offset = int(request.get_json()['offset'])
@@ -222,9 +237,5 @@ def apply_for_credit():
         return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
     return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
 
-
-
-
-#print(get_poster('LADA', 'Granta'))
 app.secret_key = os.urandom(24)
 app.run(host='0.0.0.0', port='80', debug=True)

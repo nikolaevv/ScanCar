@@ -4,6 +4,28 @@ from app import app, db, models
 
 url = 'https://auto.ru/-/ajax/desktop/listing/'
 
+def hex_to_rgb(hex):
+    return tuple(int(hex[i:i+2], 16) for i in (0, 2, 4))
+
+def hex_to_name(hex):
+    rgb = hex_to_rgb(hex)
+    if rgb == (0, 0, 0) or rgb == (4,0,1):
+        return 'Чёрный'
+    elif rgb == (255, 255, 255) or rgb == (250, 251, 251):
+        return 'Белый'
+    elif rgb == (255, 0, 0) or rgb == (238,29,25):
+        return 'Красный'
+    elif rgb == (151, 148, 143):
+        return 'Серый'
+    elif rgb == (32, 2, 4):
+        return 'Коричневый'
+    elif rgb == (0,0,204):
+        return 'Синий'
+    elif rgb == (196,150,72):
+        return 'Песчаный'
+    else:
+        return '-'
+
 headers = {
     'Accept': '*/*',
     'Accept-Encoding': 'gzip, deflate, br',
@@ -29,16 +51,21 @@ headers = {
 payload = {"category": "cars", "section": "all", "page": 0,"geo_radius": 200, "geo_id":[213]}
 
 #brands = [['HYUNDAI', 'SOLARIS'], ['KIA', 'RIO'], ['volkswagen', 'polo'], ['volkswagen', 'tiguan'], ['skoda', 'octavia']]
+brands = [['Mazda', '6', '6'], ['Mazda', '3', '3'], ['Cadillac', 'ESCALADE', 'ESCALADE'], ['Jaguar', 'F-PACE', 'F_PACE'], ['BMW', '5 серии', '5'], ['KIA', 'Sportage', 'Sportage'], 
+            ['Chevrolet', 'Tahoe', 'Tahoe'], ['KIA', 'K5', 'K5'], ['Hyundai', 'Genesis', 'Genesis'], ['Toyota', 'Camry', 'Camry'], ['Mercedes', 'A', 'a_klasse'], 
+            ['Land Rover', 'RANGE ROVER VELAR', 'RANGE_ROVER_VELAR'], ['BMW', '3 серии', '3'], ['KIA', 'Optima']]
+
+brands = [['HYUNDAI', 'SOLARIS', 'SOLARIS'], ['KIA', 'RIO', 'RIO'], ['volkswagen', 'polo', 'polo'], ['volkswagen', 'tiguan', 'tiguan'], ['skoda', 'octavia', 'octavia']]
 
 for brand in brands:
     page = 1
 
-    while True:
+    while page < 10:
         page += 1
 
         payload['page'] = page
-        payload['catalog_filter'] = [{"mark": brand[0].upper(),"model": brand[1].upper()}]
-        headers['Referer'] = 'https://auto.ru/moskva/cars/{}/{}/all/?output_type=list&page={}'.format(brand[0].upper(), brand[1].upper(), page)
+        payload['catalog_filter'] = [{"mark": brand[0].replace(' ', '_').upper(), "model": brand[2].upper()}]
+        headers['Referer'] = 'https://auto.ru/moskva/cars/{}/{}/all/?output_type=list&page={}'.format(brand[0].replace(' ', '_').upper(), brand[2].upper(), page)
 
         try:
             response = requests.post(url, headers = headers, json = payload).json()
@@ -54,17 +81,95 @@ for brand in brands:
                     image_url = None
                     production_date = offer['documents']['year']
 
-                    if len(offer['state']['image_urls']) > 0:
-                        image_url = 'https:' + offer['state']['image_urls'][0]['sizes']['1200x900n']
+                    color = hex_to_name(offer['color_hex'])
+                    # Цвет
+                    bodywork = offer['vehicle_info']['configuration']['human_name']
+                    # Тип кузова
+                    engine = '-'
+                    tax = '-'
+                    try:
+                        tax = offer['owner_expenses']['transport_tax']['tax_by_year']
+                    except Exception:
+                        pass
 
+                    kpp = '-'
+                    try:
+                        transmission = offer['vehicle_info']['tech_param']['transmission']
+                        if transmission == 'AUTOMATIC':
+                            kpp = 'Автоматическая'
+                        else:
+                            kpp = 'Механическая'
+                    except Exception:
+                        pass
+
+                    image_url_1, image_url_2, image_url_3 = None, None, None
+
+                    if len(offer['state']['image_urls']) > 0:
+                        try:
+                            image_url_1 = 'https:' + offer['state']['image_urls'][0]['sizes']['1200x900n']
+                            image_url_2 = 'https:' + offer['state']['image_urls'][1]['sizes']['1200x900n']
+                            image_url_3 = 'https:' + offer['state']['image_urls'][2]['sizes']['1200x900n']
+                        except Exception:
+                            pass
+
+                    AWD = '-'
+                    # Привод
+
+                    steering_wheel = '-'
+                    try:
+                        if offer['vehicle_info']['steering_wheel'] == 'LEFT':
+                            steering_wheel = 'Левый'
+                        else:
+                            steering_wheel = 'Правый'
+                    except Exception:
+                        pass
+
+                    customs = '-'
+                    try:
+                        if offer['documents']['custom_cleared'] is True:
+                            customs = 'Растаможен'
+                        else:
+                            customs = 'Не растаможен'
+                    except Exception:
+                        pass
                     
                     #print(description)
-                    print(image_url)
+                    print(brand[0])
+                    print(brand[1])
+                    print(color)
                     print(price)
-                    print(model)
                     print(production_date)
+                    print(image_url)
+                    #print(description)
+                    print(bodywork)
+                    print(engine)
+                    print(tax)
+                    print(kpp)
+                    print(image_url_1)
+                    print(image_url_2)
+                    print(image_url_3)
+                    print(steering_wheel)
+                    print(customs)
+                    #time.sleep(1000)
 
-                    new_car = models.Car(brand = brand[0], model = brand[1], price = price, production_date = production_date, image_url = image_url, description = description)
+                    new_car = models.Car(brand = brand[0], 
+                                            model = brand[1], 
+                                            color = color, 
+                                            price = price, 
+                                            production_date = production_date, 
+                                            image_url = image_url, 
+                                            description = description,
+                                            bodywork = bodywork,
+                                            engine = engine,
+                                            tax = tax,
+                                            kpp = kpp,
+                                            image_url_1 = image_url_1,
+                                            image_url_2 = image_url_2,
+                                            image_url_3 = image_url_3,
+                                            steering_wheel = steering_wheel,
+                                            customs = customs
+                    )
+
                     db.session.add(new_car)
                     db.session.commit()
                 else:

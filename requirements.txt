@@ -6,3 +6,4 @@ sqlalchemy-migrate
 keras
 tensorflow
 pandas
+webcolors==1.3
