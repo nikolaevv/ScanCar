@@ -11,6 +11,7 @@ from werkzeug.utils import secure_filename
 import os
 from config import token
 import base64
+import datetime
 import requests
 import json
 import time
@@ -167,6 +168,57 @@ def calc_auto():
             response = requests.post('https://gw.hackathon.vtb.ru/vtb/hackathon/calculate', headers = headers, json = data).json()
             program = response['result']
             return program
+        return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
+    return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
+
+@app.route('/api/credit/apply', methods = ['POST'])
+def apply_for_credit():
+    if request.get_json() is not None:
+        if request.get_json().get('comment', None) is not None and request.get_json().get('email', None) is not None and request.get_json().get('income_amount', None) is not None and request.get_json().get('birth_date_time', None) is not None and request.get_json().get('birth_place', None) is not None and request.get_json().get('family_name', None) is not None and request.get_json().get('first_name', None) is not None and request.get_json().get('gender', None) is not None and request.get_json().get('middle_name', None) is not None and request.get_json().get('nationality_country_code', None) is not None:
+            comment = request.get_json()['comment']
+            email = request.get_json()['email']
+            income_amount = int(request.get_json()['income_amount'])
+            birth_date_time = request.get_json()['birth_date_time']
+            birth_place = request.get_json()['birth_place']
+            family_name = request.get_json()['family_name']
+            first_name = request.get_json()['first_name']
+            gender = request.get_json()['gender']
+            middle_name = request.get_json()['first_name']
+
+            phone = request.get_json()['phone']
+            interest_rate = float(request.get_json()['interest_rate'])
+            requested_amount = int(request.get_json()['requested_amount'])
+            requested_term = int(request.get_json()['requested_term']) * 12
+            trade_mark = request.get_json()['trade_mark']
+            vehicle_cost = int(request.get_json()['vehicle_cost'])
+            
+            nationality_country_code = request.get_json()['nationality_country_code']
+
+            data = {'comment': comment, 
+                    'customer_party': {'email': email,
+                                       'income_amount': income_amount,
+                                       'person': {'birth_date_time': birth_date_time,
+                                                  'birth_place': birth_place,
+                                                  'family_name': family_name,
+                                                  'first_name': first_name,
+                                                  'middle_name': middle_name,
+                                                  'gender': gender,
+                                                  'nationality_country_code': nationality_country_code
+                                        },
+                                        'phone': phone,
+                    }, 
+                    
+                    "interest_rate": interest_rate,
+                    "requested_amount": requested_amount,
+                    "requested_term": requested_term,
+                    "trade_mark": trade_mark,
+                    "vehicle_cost": vehicle_cost
+            }
+
+            #"datetime": datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+            response = requests.post('https://gw.hackathon.vtb.ru/vtb/hackathon/carloan', headers = headers, json = data).json()
+        
+            return {'approved': response['application']['decision_report']['application_status'] == 'prescore_approved', 'decision_end_date': response['application']['decision_report']['decision_end_date']}
         return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
     return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
 
