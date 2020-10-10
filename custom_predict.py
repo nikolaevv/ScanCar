@@ -33,7 +33,6 @@ def load_and_preprocess_image(path):
     return preprocess_image(image)
 
 input_arr = load_and_preprocess_image('/root/tiguan.jpg')
-
 probs_lite = lite_model(input_arr[None, ...])[0]
-print(np.argmax(probs_lite))
-print(probs_lite)
+#print(np.argmax(probs_lite))
+#print(probs_lite)

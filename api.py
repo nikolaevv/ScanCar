@@ -3,6 +3,7 @@
 from flask import Flask, render_template, send_from_directory, session, redirect, url_for, escape, request, Response
 from flask_sqlalchemy import SQLAlchemy
 from app import models, app, db
+from custom_predict import load_and_preprocess_image, lite_model
 from flask_api import status
 #import StringIO
 from PIL import Image
@@ -14,6 +15,7 @@ import pandas as pd
 #from keras.models import load_model
 import os
 from config import token
+import numpy as np
 import base64
 import datetime
 import requests
@@ -137,19 +139,25 @@ def scan_photo():
         # Преобразование в base-64
         
         #predict(photo)
+        custom_marks = ['skoda octavia', 'volkswagen polo', 'KIA RIO', 'HYUNDAI SOLARIS', 'volkswagen tiguan']
     
-        try:
-            response = requests.post('https://gw.hackathon.vtb.ru/vtb/hackathon/car-recognize', headers = headers, json = {'content': str(my_string, 'utf-8')}).json()
-            # Запрос к VTB-API
-            print(response)
-            
-            probabilities = response['probabilities']
-            print(probabilities)
-            favourite = max(probabilities, key = probabilities.get)
-            print(favourite)
-            # Фаворит нейросети ВТБ
-        except Exception:
-            return {'error': 'Photo was not recognized'}, status.HTTP_400_BAD_REQUEST
+        input_arr = load_and_preprocess_image('./photos/image_scaled.jpg')
+        probs_lite = lite_model(input_arr[None, ...])[0]
+        favourite = custom_marks.index(max(probs_lite))
+
+        if np.argmax(probs_lite) < 1:
+            try:
+                response = requests.post('https://gw.hackathon.vtb.ru/vtb/hackathon/car-recognize', headers = headers, json = {'content': str(my_string, 'utf-8')}).json()
+                # Запрос к VTB-API
+                print(response)
+                
+                probabilities = response['probabilities']
+                print(probabilities)
+                favourite = max(probabilities, key = probabilities.get)
+                print(favourite)
+                # Фаворит нейросети ВТБ
+            except Exception:
+                return {'error': 'Photo was not recognized'}, status.HTTP_400_BAD_REQUEST
 
         brand, model = favourite.split()[0], favourite.split()[-1]
         image_url = get_poster(brand, model)
