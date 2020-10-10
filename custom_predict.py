@@ -4,12 +4,12 @@ import tensorflow as tf
 #from google.colab import drive
 #drive.mount('/gdrive')
 
-saved_model_path  = "/root/scanauto/my_model" # моделька
+saved_model_path  = "/root/scanauto/additional_car_model" # моделька
 
 converter = tf.lite.TFLiteConverter.from_saved_model(saved_model_path)
 lite_model_content = converter.convert()
 
-with open(saved_model_path, "wb") as f:
+with open("/gdrive/My Drive/lite_car_model", "wb") as f:
     f.write(lite_model_content)
 
 interpreter = tf.lite.Interpreter(model_content=lite_model_content)
