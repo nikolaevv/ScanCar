@@ -62,8 +62,9 @@ brands = [['Mazda', '3', '3'], ['BMW', '5 серии', '5er'], ['Hyundai', 'Gene
 
 for brand in brands:
     page = 1
+    new_mark_models = 0
 
-    while page < 10:
+    while new_mark_models < 10:
         page += 1
 
         payload['page'] = page
@@ -76,6 +77,7 @@ for brand in brands:
 
             for offer in offers:
                 if offer['section'] == 'new':
+                    new_mark_models += 1
 
                     description = offer['description']
                     price = offer['price_info']['price']

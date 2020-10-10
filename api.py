@@ -43,6 +43,11 @@ def queryset_to_list(queryset):
         del q_dict['_sa_instance_state']
         del q_dict['description']
         q_dict['type'] = 'autoru'
+        images = [q_dict['image_url_1'], q_dict['image_url_2'], q_dict['image_url_3']]
+        q_dict['image_urls'] = [i for i in images if i is not None]
+        del q_dict['image_url_1']
+        del q_dict['image_url_2']
+        del q_dict['image_url_3']
         flat_list.append(q_dict)
     return flat_list
 
