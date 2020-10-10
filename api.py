@@ -8,6 +8,10 @@ from flask_api import status
 from PIL import Image
 from werkzeug.utils import secure_filename
 #import pandas
+import pandas as pd
+import tensorflow as tf
+import keras
+from keras.models import load_model
 import os
 from config import token
 import base64
@@ -17,6 +21,17 @@ import json
 import time
 
 from sqlalchemy.ext.declarative import DeclarativeMeta
+
+# we need to redefine our metric function in order 
+# to use it when loading the model 
+def auc(y_true, y_pred):
+    auc = tf.metrics.auc(y_true, y_pred)[1]
+    keras.backend.get_session().run(tf.local_variables_initializer())
+    return auc
+
+global graph
+graph = tf.get_default_graph()
+model = load_model('my_model', custom_objects={'auc': auc})
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg'}
 headers = {'X-IBM-Client-Id': token, 'content-type': "application/json", 'accept': "application/json"}
@@ -82,6 +97,25 @@ def get_price(model):
     else:
         return '-'
 
+def predict(photo):
+    data = {"success": False}
+
+    #params = flask.request.json
+    #if (params == None):
+    #params = flask.request.args
+
+    # if parameters are found, return a prediction
+    #if (params != None):
+    #x=pd.DataFrame.from_dict(params, orient='index').transpose()
+    with graph.as_default():
+        print(model.predict(photo))
+        data["prediction"] = str(model.predict(photo)[0][0])
+        data["success"] = True
+
+    # return a response in json format 
+    return flask.jsonify(data)    
+
+
 @app.route('/api/specials/get', methods = ['GET'])
 def get_settings():
     response = requests.get('https://gw.hackathon.vtb.ru/vtb/hackathon/settings?name=Haval&language=ru-RU', headers = headers).json()
@@ -98,6 +132,7 @@ def scan_photo():
         my_string = base64.b64encode(photo.read())
         # Преобразование в base-64
         
+        predict(photo)
     
         try:
             response = requests.post('https://gw.hackathon.vtb.ru/vtb/hackathon/car-recognize', headers = headers, json = {'content': str(my_string, 'utf-8')}).json()
@@ -173,7 +208,7 @@ def calc_auto():
             initialFee = int(request.get_json()['initialFee'])
             kaskoValue = int(request.get_json()['kaskoValue'])
             term = int(request.get_json()['term'])
-            specialConditions = int(request.get_json()['specialConditions'])
+            specialConditions = request.get_json()['specialConditions']
 
             data = {'clientTypes': ['ac43d7e4-cd8c-4f6f-b18a-5ccbc1356f75'], 
                     'cost': float(cost), 
@@ -183,7 +218,7 @@ def calc_auto():
                     'residualPayment': float(cost - initialFee), 
                     'language': 'ru-RU',
                     'settingsName': 'Haval',
-                    'specialConditions': ["57ba0183-5988-4137-86a6-3d30a4ed8dc9","b907b476-5a26-4b25-b9c0-8091e9d5c65f","cbfc4ef3-af70-4182-8cf6-e73f361d1e68"]
+                    'specialConditions': specialConditions
             }
 
             response = requests.post('https://gw.hackathon.vtb.ru/vtb/hackathon/calculate', headers = headers, json = data).json()

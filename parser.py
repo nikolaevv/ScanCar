@@ -51,11 +51,12 @@ headers = {
 payload = {"category": "cars", "section": "all", "page": 0,"geo_radius": 200, "geo_id":[213]}
 
 #brands = [['HYUNDAI', 'SOLARIS'], ['KIA', 'RIO'], ['volkswagen', 'polo'], ['volkswagen', 'tiguan'], ['skoda', 'octavia']]
-brands = [['Mazda', '6', '6'], ['Mazda', '3', '3'], ['Cadillac', 'ESCALADE', 'ESCALADE'], ['Jaguar', 'F-PACE', 'F_PACE'], ['BMW', '5 серии', '5'], ['KIA', 'Sportage', 'Sportage'], 
+brands = [['HYUNDAI', 'SOLARIS', 'SOLARIS'], ['KIA', 'RIO', 'RIO'], ['volkswagen', 'polo', 'polo'], ['volkswagen', 'tiguan', 'tiguan'], ['skoda', 'octavia', 'octavia']]
+brands += [['Mazda', '6', '6'], ['Mazda', '3', '3'], ['Cadillac', 'ESCALADE', 'ESCALADE'], ['Jaguar', 'F-PACE', 'F_PACE'], ['BMW', '5 серии', '5'], ['KIA', 'Sportage', 'Sportage'], 
             ['Chevrolet', 'Tahoe', 'Tahoe'], ['KIA', 'K5', 'K5'], ['Hyundai', 'Genesis', 'Genesis'], ['Toyota', 'Camry', 'Camry'], ['Mercedes', 'A', 'a_klasse'], 
             ['Land Rover', 'RANGE ROVER VELAR', 'RANGE_ROVER_VELAR'], ['BMW', '3 серии', '3'], ['KIA', 'Optima']]
 
-brands = [['HYUNDAI', 'SOLARIS', 'SOLARIS'], ['KIA', 'RIO', 'RIO'], ['volkswagen', 'polo', 'polo'], ['volkswagen', 'tiguan', 'tiguan'], ['skoda', 'octavia', 'octavia']]
+
 
 for brand in brands:
     page = 1
@@ -78,7 +79,7 @@ for brand in brands:
                     price = offer['price_info']['price']
 
                     model = offer['vehicle_info']['model_info']['name']
-                    image_url = None
+                    #image_url = None
                     production_date = offer['documents']['year']
 
                     color = hex_to_name(offer['color_hex'])
@@ -139,7 +140,7 @@ for brand in brands:
                     print(color)
                     print(price)
                     print(production_date)
-                    print(image_url)
+                    #print(image_url)
                     #print(description)
                     print(bodywork)
                     print(engine)
@@ -157,7 +158,6 @@ for brand in brands:
                                             color = color, 
                                             price = price, 
                                             production_date = production_date, 
-                                            image_url = image_url, 
                                             description = description,
                                             bodywork = bodywork,
                                             engine = engine,
