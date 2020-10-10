@@ -3,7 +3,6 @@
 from flask import Flask, render_template, send_from_directory, session, redirect, url_for, escape, request, Response
 from flask_sqlalchemy import SQLAlchemy
 from app import models, app, db
-from custom_predict import load_and_preprocess_image, lite_model
 from flask_api import status
 #import StringIO
 from PIL import Image
@@ -129,6 +128,7 @@ def get_settings():
 
 @app.route('/api/photo/recognize', methods = ['POST'])
 def scan_photo():
+    from custom_predict import load_and_preprocess_image, lite_model
     # Распознавание одного фото
     photo = request.files['photo']
     
