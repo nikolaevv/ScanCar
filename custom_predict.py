@@ -9,10 +9,10 @@ saved_model_path  = "/root/scanauto/additional_car_model" # моделька
 converter = tf.lite.TFLiteConverter.from_saved_model(saved_model_path)
 lite_model_content = converter.convert()
 
-with open("/gdrive/My Drive/lite_car_model", "wb") as f:
-    f.write(lite_model_content)
+#with open("/gdrive/My Drive/lite_car_model", "wb") as f:
+#f.write(lite_model_content)
 
-interpreter = tf.lite.Interpreter(model_content=lite_model_content)
+#interpreter = tf.lite.Interpreter(model_content=lite_model_content)
 
 # This little helper wraps the TF Lite interpreter as a numpy-to-numpy function.
 def lite_model(images):
