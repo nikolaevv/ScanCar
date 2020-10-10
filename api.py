@@ -9,9 +9,9 @@ from PIL import Image
 from werkzeug.utils import secure_filename
 #import pandas
 import pandas as pd
-import tensorflow as tf
-import keras
-from keras.models import load_model
+#import tensorflow as tf
+#import keras
+#from keras.models import load_model
 import os
 from config import token
 import base64
@@ -20,7 +20,7 @@ import requests
 import json
 import time
 
-from sqlalchemy.ext.declarative import DeclarativeMeta
+#from sqlalchemy.ext.declarative import DeclarativeMeta
 
 # we need to redefine our metric function in order 
 # to use it when loading the model 
@@ -29,9 +29,9 @@ def auc(y_true, y_pred):
     keras.backend.get_session().run(tf.local_variables_initializer())
     return auc
 
-global graph
-graph = tf.get_default_graph()
-model = load_model('my_model', custom_objects={'auc': auc})
+#global graph
+#graph = tf.get_default_graph()
+#model = load_model('my_model', custom_objects={'auc': auc})
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg'}
 headers = {'X-IBM-Client-Id': token, 'content-type': "application/json", 'accept': "application/json"}
@@ -113,8 +113,7 @@ def predict(photo):
         data["success"] = True
 
     # return a response in json format 
-    return flask.jsonify(data)    
-
+    return flask.jsonify(data)
 
 @app.route('/api/specials/get', methods = ['GET'])
 def get_settings():
@@ -132,7 +131,7 @@ def scan_photo():
         my_string = base64.b64encode(photo.read())
         # Преобразование в base-64
         
-        predict(photo)
+        #predict(photo)
     
         try:
             response = requests.post('https://gw.hackathon.vtb.ru/vtb/hackathon/car-recognize', headers = headers, json = {'content': str(my_string, 'utf-8')}).json()
@@ -194,7 +193,7 @@ def get_auto():
             #[offset:num]
             cars = cars_vtb + cars_autoru
 
-            return {'cars': cars[offset:num]}
+            return {'cars': cars[offset:(offset+num)]}
         return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
     return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
 
