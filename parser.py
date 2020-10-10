@@ -52,13 +52,18 @@ payload = {"category": "cars", "section": "all", "page": 0,"geo_radius": 200, "g
 
 #brands = [['HYUNDAI', 'SOLARIS'], ['KIA', 'RIO'], ['volkswagen', 'polo'], ['volkswagen', 'tiguan'], ['skoda', 'octavia']]
 #brands = [['HYUNDAI', 'SOLARIS', 'SOLARIS'], ['KIA', 'RIO', 'RIO'], ['volkswagen', 'polo', 'polo'], ['volkswagen', 'tiguan', 'tiguan'], ['skoda', 'octavia', 'octavia']]
-'''
+
 brands = [['Mazda', '6', '6'], ['Mazda', '3', '3'], ['Cadillac', 'ESCALADE', 'ESCALADE'], ['Jaguar', 'F-PACE', 'F_PACE'], ['BMW', '5 серии', '5'], ['KIA', 'Sportage', 'Sportage'], 
             ['Chevrolet', 'Tahoe', 'Tahoe'], ['KIA', 'K5', 'K5'], ['Hyundai', 'Genesis', 'Genesis'], ['Toyota', 'Camry', 'Camry'], ['Mercedes', 'A', 'a_klasse'], 
-            ['Land Rover', 'RANGE ROVER VELAR', 'RANGE_ROVER_VELAR'], ['BMW', '3 серии', '3'], ['KIA', 'Optima', 'Optima']]
-'''
+            ['Land Rover', 'RANGE ROVER VELAR', 'RANGE_ROVER_VELAR'], ['BMW', '3 серии', '3'], ['KIA', 'Optima', 'Optima'], ['HYUNDAI', 'SOLARIS', 'SOLARIS'], ['KIA', 'RIO', 'RIO'], 
+            ['volkswagen', 'polo', 'polo'], ['volkswagen', 'tiguan', 'tiguan'], ['skoda', 'octavia', 'octavia']]
 
-brands = [['Mazda', '3', '3'], ['BMW', '5 серии', '5er'], ['Hyundai', 'Genesis', 'Genesis'], ['Toyota', 'Camry', 'Camry'], ['BMW', '3 серии', '3er'], ['KIA', 'Optima', 'Optima']]
+
+# Неспаршенные модели:
+# [['KIA', 'Optima', 'Optima']]
+# ['Mazda', '3', '3']
+# ['Hyundai', 'Genesis', 'Genesis']
+# ['Toyota', 'Camry', 'Camry']
 
 for brand in brands:
     page = 1
@@ -177,7 +182,7 @@ for brand in brands:
                     db.session.add(new_car)
                     db.session.commit()
                 else:
-                    print('used')
+                    print('used', brand)
 
                 
                 
