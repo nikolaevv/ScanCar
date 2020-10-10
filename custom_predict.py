@@ -1,8 +1,8 @@
 import numpy as np
 import tensorflow as tf
 
-from google.colab import drive
-drive.mount('/gdrive')
+#from google.colab import drive
+#drive.mount('/gdrive')
 
 saved_model_path  = "/root/scanauto/my_model" # моделька
 
