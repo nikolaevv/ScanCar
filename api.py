@@ -143,7 +143,7 @@ def scan_photo():
     
         input_arr = load_and_preprocess_image('./photos/image_scaled.jpg')
         probs_lite = lite_model(input_arr[None, ...])[0]
-        favourite = custom_marks[probs_lite.values().index(max(probs_lite))]
+        favourite = custom_marks[probs_lite.tolist().index(max(probs_lite))]
 
         if np.argmax(probs_lite) < 1:
             try:
