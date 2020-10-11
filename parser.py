@@ -48,7 +48,7 @@ headers = {
     'x-requested-with': 'fetch'
 }
 
-payload = {"category": "cars", "section": "all", "page": 0,"geo_radius": 200, "geo_id":[213]}
+payload = {"category": "cars", "section": "all", "page": 0,"geo_radius": 500, "geo_id":[213]}
 
 #brands = [['HYUNDAI', 'SOLARIS'], ['KIA', 'RIO'], ['volkswagen', 'polo'], ['volkswagen', 'tiguan'], ['skoda', 'octavia']]
 #brands = [['HYUNDAI', 'SOLARIS', 'SOLARIS'], ['KIA', 'RIO', 'RIO'], ['volkswagen', 'polo', 'polo'], ['volkswagen', 'tiguan', 'tiguan'], ['skoda', 'octavia', 'octavia']]
@@ -60,10 +60,8 @@ brands = [['Mazda', '6', '6'], ['Mazda', '3', '3'], ['Cadillac', 'ESCALADE', 'ES
 
 
 # Неспаршенные модели:
-# [['KIA', 'Optima', 'Optima']]
 # ['Mazda', '3', '3']
 # ['Hyundai', 'Genesis', 'Genesis']
-# ['Toyota', 'Camry', 'Camry']
 
 for brand in brands:
     page = 1
@@ -163,20 +161,20 @@ for brand in brands:
                     #time.sleep(1000)
 
                     new_car = models.Car(brand = brand[0], 
-                                            model = brand[1], 
-                                            color = color, 
-                                            price = price, 
-                                            production_date = production_date, 
-                                            description = description,
-                                            bodywork = bodywork,
-                                            engine = engine,
-                                            tax = tax,
-                                            kpp = kpp,
-                                            image_url_1 = image_url_1,
-                                            image_url_2 = image_url_2,
-                                            image_url_3 = image_url_3,
-                                            steering_wheel = steering_wheel,
-                                            customs = customs
+                                         model = brand[1], 
+                                         color = color, 
+                                         price = price, 
+                                         production_date = production_date, 
+                                         description = description,
+                                         bodywork = bodywork,
+                                         engine = engine,
+                                         tax = tax,
+                                         kpp = kpp,
+                                         image_url_1 = image_url_1,
+                                         image_url_2 = image_url_2,
+                                         image_url_3 = image_url_3,
+                                         steering_wheel = steering_wheel,
+                                         customs = customs
                     )
 
                     db.session.add(new_car)
