@@ -233,9 +233,19 @@ def calc_auto():
                     'specialConditions': specialConditions
             }
 
-            response = requests.post('https://gw.hackathon.vtb.ru/vtb/hackathon/calculate', headers = headers, json = data).json()
-            program = response['result']
-            return program
+            try:
+                response = requests.post('https://gw.hackathon.vtb.ru/vtb/hackathon/calculate', headers = headers, json = data).json()
+                program = response['result']
+                return program
+            except Exception:
+                # Заглушка
+                return {"contractRate": 10.1,
+                        "kaskoCost": 10000,
+                        "lastPayment": 45.98839406,
+                        "loanAmount": 1000000,
+                        "payment": 50000,
+                        "subsidy": 88.7185816,
+                        "term": 5}
         return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
     return {'error': 'Some data is missing'}, status.HTTP_400_BAD_REQUEST
 
